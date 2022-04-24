@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 
-import { useAppSelector, useAppDispatch } from '../../app/hooks';
+import { useAppSelector, useAppDispatch } from '../appStore/hooks';
 import {
   decrement,
   increment,
@@ -8,8 +8,8 @@ import {
   incrementAsync,
   incrementIfOdd,
   selectCount,
-} from './counterSlice';
-import styles from './Counter.module.css';
+} from '../slices/counterSlice';
+import styles from '../styles/Counter.module.css';
 
 export function Counter() {
   const count = useAppSelector(selectCount);
@@ -23,7 +23,6 @@ export function Counter() {
       <div className={styles.row}>
         <button
           className={styles.button}
-          aria-label="Decrement value"
           onClick={() => dispatch(decrement())}
         >
           -
@@ -31,7 +30,6 @@ export function Counter() {
         <span className={styles.value}>{count}</span>
         <button
           className={styles.button}
-          aria-label="Increment value"
           onClick={() => dispatch(increment())}
         >
           +
@@ -40,7 +38,6 @@ export function Counter() {
       <div className={styles.row}>
         <input
           className={styles.textbox}
-          aria-label="Set increment amount"
           value={incrementAmount}
           onChange={(e) => setIncrementAmount(e.target.value)}
         />
