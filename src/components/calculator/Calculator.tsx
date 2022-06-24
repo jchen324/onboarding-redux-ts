@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { Operator, StoredExpression } from "../../slices/calculatorSlice";
 import { OperatorButton } from "./buttons/OperatorButton";
+import { Display } from "./Display";
 import { HistoryList } from "./history/HistoryList";
 import { NumberGrid } from "./NumberGrid";
 
@@ -120,8 +121,7 @@ export const Calculator = () => {
     <div className="row">
       <div className="main-column">
         {/** Display */}
-        <p className="sub-display">{subDisplay}</p>
-        <p className="main-display">{mainDisplay}</p>
+        <Display mainDisplay={mainDisplay} subDisplay={subDisplay} />
 
         {/** Number Grid */}
         <NumberGrid enterDigit={enterDigit} />
