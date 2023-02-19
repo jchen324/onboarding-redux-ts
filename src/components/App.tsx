@@ -1,6 +1,4 @@
-import React from 'react';
 import logo from '../logo.svg';
-import { Counter } from './Counter';
 import '../styles/App.css';
 import { Calculator } from './calculator/Calculator';
 

@@ -1,25 +1,12 @@
-import { Operator, StoredExpression } from "../../../slices/calculatorSlice";
+import { StoredExpression } from "../../../slices/calculatorSlice";
 import { HistoryItem } from "./HistoryItem";
 
-export const HistoryList = (props: {
-  history: StoredExpression[];
-  setFirst: Function;
-  setSecond: Function;
-  op: Operator;
-}) => {
+export const HistoryList = (props: { history: StoredExpression[] }) => {
   return (
     <div className="history-list">
       {props.history.map((expr, i) => {
-        return (
-          <HistoryItem
-            expr={expr}
-            setFirst={props.setFirst}
-            setSecond={props.setSecond}
-            op={props.op}
-          />
-        );
+        return <HistoryItem expr={expr} />;
       })}
     </div>
   );
 };
-

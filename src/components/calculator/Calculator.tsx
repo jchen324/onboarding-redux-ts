@@ -1,29 +1,45 @@
-import React, { useEffect, useState } from "react";
-import { Operator, StoredExpression } from "../../slices/calculatorSlice";
+import { useEffect } from "react";
+import {
+  Operator,
+  StoredExpression,
+  setFirst,
+  setSecond,
+  setOp,
+  setMainDisplay,
+  setSubDisplay,
+  updateHistory,
+  selectHistory,
+  selectMainDisplay,
+  selectFirst,
+  selectSecond,
+  selectOp,
+} from "../../slices/calculatorSlice";
 import { OperatorButton } from "./buttons/OperatorButton";
 import { Display } from "./Display";
 import { HistoryList } from "./history/HistoryList";
 import { NumberGrid } from "./NumberGrid";
+import { useAppSelector, useAppDispatch } from "../../appStore/hooks";
 
 export const Calculator = () => {
-  const [mainDisplay, setMainDisplay] = useState("");
-  const [subDisplay, setSubDisplay] = useState("");
-  const [first, setFirst] = useState("");
-  const [second, setSecond] = useState("");
-  const [op, setOp] = useState<Operator>("");
-  const [history, setHistory] = useState<StoredExpression[]>([]);
+  const mainDisplay = useAppSelector(selectMainDisplay);
+  const first = useAppSelector(selectFirst);
+  const second = useAppSelector(selectSecond);
+  const op = useAppSelector(selectOp);
+  const history = useAppSelector(selectHistory);
+  const dispatch = useAppDispatch();
 
   useEffect(() => {
     // auto updates main display to display current expression
-    if (first || op || second) setMainDisplay([first, op, second].join(" "));
-  }, [first, op, second]);
+    if (first || op || second)
+      dispatch(setMainDisplay([first, op, second].join(" ")));
+  }, [first, op, second, dispatch]);
 
   function clear() {
     // clears current expression
-    setFirst("");
-    setSecond("");
-    setOp("");
-    setMainDisplay("");
+    dispatch(setFirst(""));
+    dispatch(setSecond(""));
+    dispatch(setOp(""));
+    dispatch(setMainDisplay(""));
   }
 
   // Enters a digit to the current expression
@@ -32,10 +48,10 @@ export const Calculator = () => {
       // makes sure the key is a numbber
       if (op === "") {
         // if no op has been typed yet, add digit to first
-        setFirst(first + key);
+        dispatch(setFirst(first + key));
       } else {
         // if an op has already been typed, add digit to second
-        setSecond(second + key);
+        dispatch(setSecond(second + key));
       }
     }
   }
@@ -46,11 +62,11 @@ export const Calculator = () => {
     if ((key === "+" || key === "-" || key === "*" || key === "/") && !op) {
       if (first) {
         // Normal case, when first has already been typed
-        setOp(key);
+        dispatch(setOp(key));
       } else if (history[0]) {
         // History case for using previous result, autofilling first
-        setFirst("" + history[0].result);
-        setOp(key);
+        dispatch(setFirst("" + history[0].result));
+        dispatch(setOp(key));
       }
       // Otherwise, do nothing
     }
@@ -92,10 +108,10 @@ export const Calculator = () => {
         second: secondNum,
         result: result,
       };
-      setHistory([newExpression, ...history]); // Updates history
-      setSubDisplay(mainDisplay); // Moves current expression to sub display;
+      dispatch(updateHistory(newExpression)); // Updates history
+      dispatch(setSubDisplay(mainDisplay)); // Moves current expression to sub display;
       clear(); // Clears current expression
-      setMainDisplay("" + result); // Display result
+      dispatch(setMainDisplay("" + result)); // Display result
     } else if (history[0] && !(first || op || second)) {
       // History case, recomputes the last typed expression
       let result = compute(history[0].result, history[0].second, history[0].op); // Computes using history
@@ -106,13 +122,15 @@ export const Calculator = () => {
         second: history[0].second,
         result: result,
       };
-      setHistory([newExpression, ...history]); // Update history
-      setSubDisplay(
-        // Update sub display with repeated expression
-        [history[0].result, history[0].op, history[0].second].join(" ")
+      dispatch(updateHistory(newExpression)); // Update history
+      dispatch(
+        setSubDisplay(
+          // Update sub display with repeated expression
+          [history[0].result, history[0].op, history[0].second].join(" ")
+        )
       );
       clear(); // Clears current expression
-      setMainDisplay("" + result); // Display result
+      dispatch(setMainDisplay("" + result)); // Display result
     }
     // If neither case is fulfilled, do nothing
   }
@@ -121,7 +139,7 @@ export const Calculator = () => {
     <div className="row">
       <div className="main-column">
         {/** Display */}
-        <Display mainDisplay={mainDisplay} subDisplay={subDisplay} />
+        <Display />
 
         {/** Number Grid */}
         <NumberGrid enterDigit={enterDigit} />
@@ -139,18 +157,13 @@ export const Calculator = () => {
         <button
           onClick={() => {
             clear();
-            setMainDisplay("");
+            dispatch(setMainDisplay(""));
           }}
         >
           Clear
         </button>
       </div>
-      <HistoryList
-        history={history}
-        setFirst={setFirst}
-        setSecond={setSecond}
-        op={op}
-      />
+      <HistoryList history={history} />
     </div>
   );
 };
